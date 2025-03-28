@@ -1,5 +1,6 @@
 package controller;
 
+import core.Medicine;
 import core.User;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -70,12 +71,16 @@ public class Main {
         }
         System.out.println("Enter password: ");
         String password = scanner.nextLine();
+
         System.out.println("Enter first name: ");
         String firstName = scanner.nextLine();
+
         System.out.println("Enter last name: ");
         String lastName = scanner.nextLine();
+
         System.out.println("Enter gender");
         String gender = scanner.nextLine();
+
         System.out.println("Enter age");
         int age = scanner.nextInt();
 
@@ -115,7 +120,8 @@ public class Main {
             System.out.println("5 View Dose History");
             System.out.println("6. View Missed Doses");
             System.out.println("7. Check Refill Alerts");
-            System.out.println("8. Logout");
+            System.out.println("8. View notifications");
+            System.out.println("9. Logout");
 
             System.out.println("Enter your choice: ");
             int choice = scanner.nextInt();
@@ -160,6 +166,11 @@ public class Main {
                     break;
 
                 case 8:
+                    clearScreen();
+                    System.out.println("=== NOTIFICATIONS ===");
+                    break;
+
+                case 9:
                     clearScreen();
                     System.out.println("LOGGING OUT ...");
                     return;
