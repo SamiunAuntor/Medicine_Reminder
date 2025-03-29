@@ -2,6 +2,7 @@ package core;
 
 import java.io.*;
 import java.util.*;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -11,16 +12,23 @@ public class Medicine {
     private String dosage;
     private int quantity;
     private LocalTime[] times;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalDate expiryDate;
 
     private static final String FILE_PATH = "D:\\SWE\\3rd Semester\\SWE 4302 OOP II Lab (Group A)\\OOP II Project\\Medicine Reminder\\medicines.txt";
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public Medicine(String username, String name, String dosage, int quantity, LocalTime[] times) {
+    public Medicine(String username, String name, String dosage, int quantity, LocalTime[] times, LocalDate startDate, LocalDate endDate, LocalDate expiryDate) {
         this.username = username;
         this.name = name;
         this.dosage = dosage;
         this.quantity = quantity;
         this.times = times;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.expiryDate = expiryDate;
     }
 
     // Method to create the medicines file if it doesn't exist
@@ -40,7 +48,7 @@ public class Medicine {
     }
 
     // Add a new medicine to the database
-    public static boolean addMedicine(String username, String name, String dosage, int quantity, LocalTime[] times) {
+    public static boolean addMedicine(String username, String name, String dosage, int quantity, LocalTime[] times, LocalDate startDate, LocalDate endDate, LocalDate expiryDate) {
         createMedicinesFileIfNotExist();  // Ensure the file exists
 
         if (doesMedicineExist(username, name)) {
@@ -53,7 +61,8 @@ public class Medicine {
                 timeJoiner.add(time.format(TIME_FORMATTER));
             }
 
-            writer.write(username + "," + name + "," + dosage + "," + quantity + "," + timeJoiner);
+            writer.write(username + "," + name + "," + dosage + "," + quantity + "," + timeJoiner + ","
+                    + startDate.format(DATE_FORMATTER) + "," + endDate.format(DATE_FORMATTER) + "," + expiryDate.format(DATE_FORMATTER));
             writer.newLine();
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,13 +106,79 @@ public class Medicine {
                     LocalTime[] times = Arrays.stream(timeStrings)
                             .map(t -> LocalTime.parse(t, TIME_FORMATTER))
                             .toArray(LocalTime[]::new);
+                    LocalDate startDate = LocalDate.parse(details[5], DATE_FORMATTER);
+                    LocalDate endDate = LocalDate.parse(details[6], DATE_FORMATTER);
+                    LocalDate expiryDate = LocalDate.parse(details[7], DATE_FORMATTER);
 
-                    medicinesList.add(new Medicine(username, name, dosage, quantity, times));
+                    medicinesList.add(new Medicine(username, name, dosage, quantity, times, startDate, endDate, expiryDate));
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return medicinesList;
+    }
+
+    // Method to remove a medicine from the file
+    public static boolean removeMedicine(String username, String name) {
+        createMedicinesFileIfNotExist();  // Ensure the file exists
+
+        List<Medicine> medicines = getMedicineList(username);  // Get the list of medicines for the user
+        boolean removed = false;
+
+        // Filter out the medicine to be removed
+        medicines.removeIf(medicine -> medicine.getName().equalsIgnoreCase(name));
+
+        // Rewrite the file with the updated medicine list
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+            for (Medicine medicine : medicines) {
+                StringJoiner timeJoiner = new StringJoiner(",");
+                for (LocalTime time : medicine.getTimes()) {
+                    timeJoiner.add(time.format(TIME_FORMATTER));
+                }
+
+                writer.write(medicine.getUsername() + "," + medicine.getName() + "," + medicine.getDosage() + "," + medicine.getQuantity() + "," + timeJoiner + ","
+                        + medicine.getStartDate().format(DATE_FORMATTER) + "," + medicine.getEndDate().format(DATE_FORMATTER) + "," + medicine.getExpiryDate().format(DATE_FORMATTER));
+                writer.newLine();
+            }
+            removed = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return removed;
+    }
+
+    // Getter functions for new fields
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+
+    // Existing Getter functions
+    public String getUsername() {
+        return username;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDosage() {
+        return dosage;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public LocalTime[] getTimes() {
+        return times;
     }
 }

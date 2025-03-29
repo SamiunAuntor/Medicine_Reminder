@@ -1,8 +1,9 @@
 package controller;
 
 import core.Medicine;
+import core.NotificationManager;
 import core.User;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.io.*;
@@ -50,7 +51,7 @@ public class Main {
         }
     }
 
-    // Method to clear the colsole screen
+    // Method to clear the console screen
     private static void clearScreen() {
         try {
             new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -117,10 +118,10 @@ public class Main {
             System.out.println("2. View Medicine");
             System.out.println("3. Add Reminder");
             System.out.println("4. View Reminders");
-            System.out.println("5 View Dose History");
+            System.out.println("5. View Dose History");
             System.out.println("6. View Missed Doses");
             System.out.println("7. Check Refill Alerts");
-            System.out.println("8. View notifications");
+            System.out.println("8. View Notifications");
             System.out.println("9. Logout");
 
             System.out.println("Enter your choice: ");
@@ -137,37 +138,43 @@ public class Main {
                 case 2:
                     clearScreen();
                     System.out.println("=== MEDICINE LIST ===");
-
+                    // Here you can implement the logic to view the medicine list
                     break;
 
                 case 3:
+                    clearScreen();
                     System.out.println("=== ADD REMINDER ===");
+                    // Implement add reminder functionality
                     break;
 
                 case 4:
                     clearScreen();
                     System.out.println("=== REMINDER LIST ===");
+                    // Implement reminder list view functionality
                     break;
 
                 case 5:
                     clearScreen();
                     System.out.println("=== DOSE HISTORY ===");
+                    // Implement dose history functionality
                     break;
 
                 case 6:
                     clearScreen();
                     System.out.println("=== MISSED DOSES ===");
+                    // Implement missed doses functionality
                     break;
 
                 case 7:
                     clearScreen();
                     System.out.println("=== REFILL ALERTS ===");
-
+                    // Implement refill alerts functionality
                     break;
 
                 case 8:
                     clearScreen();
                     System.out.println("=== NOTIFICATIONS ===");
+                    NotificationManager.showNotification(username, scanner);
                     break;
 
                 case 9:
@@ -177,31 +184,30 @@ public class Main {
 
                 default:
                     System.out.println("Invalid choice. Please try again.");
-
             }
         }
     }
 
     private static void addMedicine (String username, Scanner scanner) {
-        System.out.println("Enter medicine name : ");
+        System.out.println("Enter medicine name: ");
         String medicineName = scanner.nextLine();
 
-        System.out.println("Enter dosage (e.g., 500mg) : ");
+        System.out.println("Enter dosage (e.g., 500mg): ");
         String dosage = scanner.nextLine();
 
-        System.out.println("Enter quantity :");
+        System.out.println("Enter quantity: ");
         int quantity = scanner.nextInt();
 
         int timesPerDay;
 
         while (true) {
-            System.out.println("Enter number of times you take this medicine per day (1, 2 or 3) : ");
+            System.out.println("Enter number of times you take this medicine per day (1, 2, or 3): ");
             timesPerDay = scanner.nextInt();
             scanner.nextLine();
-            if (timesPerDay >=1 && timesPerDay <= 3) {
+            if (timesPerDay >= 1 && timesPerDay <= 3) {
                 break;
             }
-            System.out.println("Invalid input! Please enter 1, 2 or 3.");
+            System.out.println("Invalid input! Please enter 1, 2, or 3.");
         }
 
         LocalTime[] times = new LocalTime[timesPerDay];
@@ -209,7 +215,7 @@ public class Main {
 
         for (int i = 0; i < timesPerDay; i++) {
             while (true) {
-                System.out.println("Enter time for dose " + (i + 1) + "HH:mm, e.g., 08:00 or 14:30 : ");
+                System.out.println("Enter time for dose " + (i + 1) + " (HH:mm, e.g., 08:00 or 14:30): ");
                 String timeInput = scanner.nextLine();
 
                 try {
@@ -222,12 +228,34 @@ public class Main {
             }
         }
 
-        boolean added = Medicine.addMedicine(username, medicineName, dosage, quantity, times);
+        // New input for start date, end date, and expiry date
+        LocalDate startDate = inputDate(scanner, "Enter the start date (yyyy-MM-dd): ");
+        LocalDate endDate = inputDate(scanner, "Enter the end date (yyyy-MM-dd): ");
+        LocalDate expiryDate = inputDate(scanner, "Enter the expiry date (yyyy-MM-dd): ");
+
+        boolean added = Medicine.addMedicine(username, medicineName, dosage, quantity, times, startDate, endDate, expiryDate);
         if (added) {
             System.out.println("Medicine successfully added. Press enter to return to Dashboard...");
         }
         else {
-            System.out.println("Medicine already exists. Please enter to return to Dashboard...");
+            System.out.println("Medicine already exists. Press enter to return to Dashboard...");
         }
+    }
+
+    // Helper method to input dates
+    private static LocalDate inputDate(Scanner scanner, String prompt) {
+        LocalDate date = null;
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        while (true) {
+            System.out.println(prompt);
+            String dateInput = scanner.nextLine();
+            try {
+                date = LocalDate.parse(dateInput, dateFormatter);
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format! Please enter in yyyy-MM-dd format.");
+            }
+        }
+        return date;
     }
 }

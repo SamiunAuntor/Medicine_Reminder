@@ -26,11 +26,23 @@ public class NotificationManager {
     }
 
     // Store notification when medicine time comes
-    public static void addNotification(String username, String medicineName, LocalTime time) {
+    public static void addNotification(String username, String medicineName, LocalTime time, String type) {
         createNotificationsFileIfNotExist(); // Ensure the file exists before adding
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
-            writer.write(username + "," + medicineName + "," + time.format(TIME_FORMATTER) + "," + "PENDING");
+            writer.write(username + "," + medicineName + "," + time.format(TIME_FORMATTER) + "," + type);
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Store notification for expired medicine or stock-out
+    public static void addExpiryOrStockOutNotification(String username, String medicineName, String type) {
+        createNotificationsFileIfNotExist(); // Ensure the file exists before adding
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
+            writer.write(username + "," + medicineName + ",," + type); // No time needed for expiry/stock-out notifications
             writer.newLine();
         } catch (IOException e) {
             e.printStackTrace();
@@ -76,23 +88,130 @@ public class NotificationManager {
 
     // Process selected notification
     private static void processNotification(String notification, Scanner scanner) {
-        System.out.println("1. Medicine Taken\n2. Medicine Skipped\n3. Back");
+        String[] details = notification.split(",");
+        String medicineName = details[1];
+        String type = details[3];
+
+        // Show details for the specific medicine first
+        showMedicineDetails(medicineName);
+
+        if (type.equals("PENDING")) {
+            System.out.println("1. Medicine Taken\n2. Medicine Skipped\n3. Back");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    updateNotificationStatus(notification, "TAKEN");
+                    break;
+                case 2:
+                    updateNotificationStatus(notification, "SKIPPED");
+                    break;
+                case 3:
+                    return; // Go back without making any changes
+                default:
+                    System.out.println("Invalid choice. Try again.");
+                    processNotification(notification, scanner); // Recurse to ask again
+            }
+        } else if (type.equals("Out of Stock")) {
+            // Handle stock-out notification
+            handleStockOutNotification(medicineName, scanner);
+        } else if (type.equals("EXPIRED")) {
+            // Handle expired medicine notification
+            handleExpiredMedicineNotification(medicineName, scanner);
+        }
+    }
+
+    // Show the details of a specific medicine (for both expired and out-of-stock cases)
+    private static void showMedicineDetails(String medicineName) {
+        // Logic to fetch and display medicine details (e.g., dosage, timings)
+        System.out.println("Medicine Details for: " + medicineName);
+        // You would fetch the actual details from the medicine database here
+        System.out.println("Medicine: " + medicineName);
+        System.out.println("Dosage: 2 pills per day");
+        System.out.println("Frequency: Twice a day");
+        // Add any other medicine details you wish to display
+    }
+
+    // Handle stock-out notification and ask user if they want to add quantity now
+    private static void handleStockOutNotification(String medicineName, Scanner scanner) {
+        System.out.println("Stock-out notification for " + medicineName + ".");
+        System.out.println("1. Add Quantity Now\n2. Add Later\n3. Back");
+
         int choice = scanner.nextInt();
         scanner.nextLine();
 
         switch (choice) {
             case 1:
-                updateNotificationStatus(notification, "TAKEN");
+                // Here you would add the logic to instantly add quantity to the stock
+                System.out.println("Enter the quantity to add: ");
+                int quantity = scanner.nextInt();
+                scanner.nextLine();
+                updateStock(medicineName, quantity);
+                updateNotificationStatus(getStockOutNotification(medicineName), "STOCK UPDATED");
                 break;
             case 2:
-                updateNotificationStatus(notification, "SKIPPED");
+                // If the user wants to add stock later, we simply return to the menu
+                System.out.println("Stock quantity will be added later.");
                 break;
             case 3:
                 return; // Go back without making any changes
             default:
                 System.out.println("Invalid choice. Try again.");
-                processNotification(notification, scanner); // Recurse to ask again
+                handleStockOutNotification(medicineName, scanner); // Recurse to ask again
         }
+    }
+
+    // Handle expired medicine notification and ask user if they want to add quantity or remove expired medicine
+    private static void handleExpiredMedicineNotification(String medicineName, Scanner scanner) {
+        System.out.println("Expired medicine notification for " + medicineName + ".");
+        System.out.println("1. Add Quantity Now\n2. Remove Expired Medicine\n3. Back");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+            case 1:
+                // Here you would add the logic to instantly add quantity to the stock
+                System.out.println("Enter the quantity to add: ");
+                int quantity = scanner.nextInt();
+                scanner.nextLine();
+                updateStock(medicineName, quantity);
+                updateNotificationStatus(getExpiredNotification(medicineName), "STOCK UPDATED");
+                break;
+            case 2:
+                // Logic to remove the expired medicine
+                removeExpiredMedicine(medicineName);
+                updateNotificationStatus(getExpiredNotification(medicineName), "REMOVED");
+                break;
+            case 3:
+                return; // Go back without making any changes
+            default:
+                System.out.println("Invalid choice. Try again.");
+                handleExpiredMedicineNotification(medicineName, scanner); // Recurse to ask again
+        }
+    }
+
+    // Update the stock quantity of a medicine (Assume a method to update stock is available)
+    private static void updateStock(String medicineName, int quantity) {
+        // Logic to update the stock of the medicine goes here
+        System.out.println("Updated stock of " + medicineName + " by " + quantity + " units.");
+    }
+
+    // Remove the expired medicine from the system (placeholder logic)
+    private static void removeExpiredMedicine(String medicineName) {
+        System.out.println("Removing expired medicine: " + medicineName);
+        // Logic to remove the expired medicine from your system (database or file) goes here
+    }
+
+    // Get the stock-out notification string for a given medicine
+    private static String getStockOutNotification(String medicineName) {
+        return "Stock-out notification for " + medicineName;
+    }
+
+    // Get the expired notification string for a given medicine
+    private static String getExpiredNotification(String medicineName) {
+        return "Expired notification for " + medicineName;
     }
 
     // Update notification status in file
@@ -103,7 +222,7 @@ public class NotificationManager {
             while ((line = reader.readLine()) != null) {
                 if (line.equals(notification)) {
                     String[] details = line.split(",");
-                    details[3] = status; // Update the status to "TAKEN" or "SKIPPED"
+                    details[3] = status; // Update the status to "TAKEN", "SKIPPED", "STOCK UPDATED", or "REMOVED"
                     allNotifications.add(String.join(",", details));
                 } else {
                     allNotifications.add(line); // Keep unchanged notifications
