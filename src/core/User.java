@@ -21,8 +21,27 @@ public class User {
         this.age = age;
     }
 
+    // Method to create the file if it doesn't exist
+    private static void createFileIfNotExist(String filePath) {
+        File file = new File(filePath);
+        try {
+            if (!file.exists()) {
+                if (file.createNewFile()) {
+                    System.out.println("Created new file: " + file.getName());
+                } else {
+                    System.out.println("Failed to create the file: " + file.getName());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Register a user
     public static boolean registerUser(String username, String password, String firstName, String lastName, String gender, int age) {
+        String filePath = "D:\\SWE\\3rd Semester\\SWE 4302 OOP II Lab (Group A)\\OOP II Project\\Medicine Reminder\\users.txt";
+        createFileIfNotExist(filePath);  // Check if users.txt exists and create if not
+
         if (doesUsernameExist(username)) {
             return false; // Username already taken
         }
@@ -30,7 +49,7 @@ public class User {
         // Create a new user
         User newUser = new User(username, password, firstName, lastName, gender, age);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("users.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
             writer.write(username + "," + password + "," + firstName + "," + lastName + "," + gender + "," + age);
             writer.newLine();
         }
@@ -43,7 +62,10 @@ public class User {
 
     // Method for checking if username already exists
     public static boolean doesUsernameExist(String username) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
+        String filePath = "D:\\SWE\\3rd Semester\\SWE 4302 OOP II Lab (Group A)\\OOP II Project\\Medicine Reminder\\users.txt";
+        createFileIfNotExist(filePath);  // Check if users.txt exists and create if not
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] userDetails = line.split(",");
@@ -60,7 +82,10 @@ public class User {
 
     // Method to validate login
     public static boolean validateLogin(String username, String password) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
+        String filePath = "D:\\SWE\\3rd Semester\\SWE 4302 OOP II Lab (Group A)\\OOP II Project\\Medicine Reminder\\users.txt";
+        createFileIfNotExist(filePath);  // Check if users.txt exists and create if not
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] userDetails = line.split(",");

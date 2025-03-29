@@ -131,13 +131,13 @@ public class Main {
                 case 1:
                     clearScreen();
                     System.out.println("=== ADD MEDICINE ===");
-                    addMedicine(scanner);
+                    addMedicine(username, scanner);
                     break;
 
                 case 2:
                     clearScreen();
                     System.out.println("=== MEDICINE LIST ===");
-                    viewMedicines();
+
                     break;
 
                 case 3:
@@ -162,7 +162,7 @@ public class Main {
                 case 7:
                     clearScreen();
                     System.out.println("=== REFILL ALERTS ===");
-                    checkRefillAlerts();
+
                     break;
 
                 case 8:
