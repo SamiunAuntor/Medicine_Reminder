@@ -1,246 +1,240 @@
 package core;
 
 import java.io.*;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.time.LocalDate;
+
 
 public class NotificationManager {
-    private static final String FILE_PATH = "D:\\SWE\\3rd Semester\\SWE 4302 OOP II Lab (Group A)\\OOP II Project\\Medicine Reminder\\notifications.txt";
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    // Method to create the notifications file if it doesn't exist
-    private static void createNotificationsFileIfNotExist() {
-        File file = new File(FILE_PATH);
-        try {
-            if (!file.exists()) {
-                if (file.createNewFile()) {
-                    System.out.println("Created new file: notifications.txt");
-                } else {
-                    System.out.println("Failed to create the file: notifications.txt");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Store notification when medicine time comes
-    public static void addNotification(String username, String medicineName, LocalTime time, String type) {
-        createNotificationsFileIfNotExist(); // Ensure the file exists before adding
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
-            writer.write(username + "," + medicineName + "," + time.format(TIME_FORMATTER) + "," + type);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Store notification for expired medicine or stock-out
-    public static void addExpiryOrStockOutNotification(String username, String medicineName, String type) {
-        createNotificationsFileIfNotExist(); // Ensure the file exists before adding
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
-            writer.write(username + "," + medicineName + ",," + type); // No time needed for expiry/stock-out notifications
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Display notifications in table format
-    public static void showNotification(String username, Scanner scanner) {
-        createNotificationsFileIfNotExist(); // Ensure the file exists before reading
-
-        List<String> notifications = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            int index = 1;
-
-            System.out.printf("%-5s %-20s %-10s %-10s\n", "No.", "Medicine", "Time", "Status");
-            System.out.println("------------------------------------------------------");
-
-            while ((line = reader.readLine()) != null) {
-                String[] details = line.split(",");
-                if (details[0].equals(username) && details[3].equals("PENDING")) {
-                    System.out.printf("%-5d %-20s %-10s %-10s\n", index, details[1], details[2], details[3]);
-                    notifications.add(line);
-                    index++;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    // Process and display all notifications for the user
+    public static void processNotifications(String username) {
+        List<Notification> notifications = Notification.getUserNotifications(username);
 
         if (notifications.isEmpty()) {
-            System.out.println("NO PENDING NOTIFICATIONS");
+            System.out.println("No new notifications.");
             return;
         }
 
-        System.out.println("Select a notification number to process or enter 0 to go back:");
+        System.out.println("Notifications for " + username + ":");
+        for (int i = 0; i < notifications.size(); i++) {
+            Notification notification = notifications.get(i);
+            System.out.println((i + 1) + ". " + notification.getType() + " - " + notification.getMessage() +
+                    (notification.isProcessed() ? " [Processed]" : " [Unprocessed]"));
+        }
+
+        // Ask the user to process a notification
+        System.out.println("\nEnter the number of the notification to process (or 0 to exit): ");
+        Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
-        scanner.nextLine();
+
         if (choice > 0 && choice <= notifications.size()) {
-            processNotification(notifications.get(choice - 1), scanner);
-        }
-    }
-
-    // Process selected notification
-    private static void processNotification(String notification, Scanner scanner) {
-        String[] details = notification.split(",");
-        String medicineName = details[1];
-        String type = details[3];
-
-        // Show details for the specific medicine first
-        showMedicineDetails(medicineName);
-
-        if (type.equals("PENDING")) {
-            System.out.println("1. Medicine Taken\n2. Medicine Skipped\n3. Back");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (choice) {
-                case 1:
-                    updateNotificationStatus(notification, "TAKEN");
-                    break;
-                case 2:
-                    updateNotificationStatus(notification, "SKIPPED");
-                    break;
-                case 3:
-                    return; // Go back without making any changes
-                default:
-                    System.out.println("Invalid choice. Try again.");
-                    processNotification(notification, scanner); // Recurse to ask again
+            Notification selectedNotification = notifications.get(choice - 1);
+            if (!selectedNotification.isProcessed()) {
+                processNotification(selectedNotification);
+            } else {
+                System.out.println("This notification has already been processed.");
             }
-        } else if (type.equals("Out of Stock")) {
-            // Handle stock-out notification
-            handleStockOutNotification(medicineName, scanner);
-        } else if (type.equals("EXPIRED")) {
-            // Handle expired medicine notification
-            handleExpiredMedicineNotification(medicineName, scanner);
+        } else {
+            System.out.println("Exiting.");
         }
     }
 
-    // Show the details of a specific medicine (for both expired and out-of-stock cases)
-    private static void showMedicineDetails(String medicineName) {
-        // Logic to fetch and display medicine details (e.g., dosage, timings)
-        System.out.println("Medicine Details for: " + medicineName);
-        // You would fetch the actual details from the medicine database here
-        System.out.println("Medicine: " + medicineName);
-        System.out.println("Dosage: 2 pills per day");
-        System.out.println("Frequency: Twice a day");
-        // Add any other medicine details you wish to display
-    }
-
-    // Handle stock-out notification and ask user if they want to add quantity now
-    private static void handleStockOutNotification(String medicineName, Scanner scanner) {
-        System.out.println("Stock-out notification for " + medicineName + ".");
-        System.out.println("1. Add Quantity Now\n2. Add Later\n3. Back");
-
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-
-        switch (choice) {
-            case 1:
-                // Here you would add the logic to instantly add quantity to the stock
-                System.out.println("Enter the quantity to add: ");
-                int quantity = scanner.nextInt();
-                scanner.nextLine();
-                updateStock(medicineName, quantity);
-                updateNotificationStatus(getStockOutNotification(medicineName), "STOCK UPDATED");
+    // Process a specific notification
+    public static void processNotification(Notification notification) {
+        switch (notification.getType()) {
+            case MISSED_DOSE:
+                showMissedDoses(notification);
                 break;
-            case 2:
-                // If the user wants to add stock later, we simply return to the menu
-                System.out.println("Stock quantity will be added later.");
+            case REFILL:
+                showRefillNotifications(notification);
                 break;
-            case 3:
-                return; // Go back without making any changes
+            case EXPIRED_MEDICINE:
+                showExpiredMedicineNotifications(notification);
+                break;
+            case MEDICINE_TIME:
+                handleMedicineTimeNotification(notification);
+                break;
             default:
-                System.out.println("Invalid choice. Try again.");
-                handleStockOutNotification(medicineName, scanner); // Recurse to ask again
+                System.out.println("Notification type not handled.");
         }
+        // Mark the notification as processed after handling it
+        Notification.markNotificationAsProcessed(notification.getUsername(), notification.getMessage());
     }
 
-    // Handle expired medicine notification and ask user if they want to add quantity or remove expired medicine
-    private static void handleExpiredMedicineNotification(String medicineName, Scanner scanner) {
-        System.out.println("Expired medicine notification for " + medicineName + ".");
-        System.out.println("1. Add Quantity Now\n2. Remove Expired Medicine\n3. Back");
+    // Show missed doses notifications
+    public static void showMissedDoses(Notification notification) {
+        System.out.println("Missed Dose Notification: " + notification.getMessage());
+        // The missed doses are stored in a file called "missed_doses.txt"
+        String missedDoseFile = "data/missed_doses.txt";
+        File file = new File(missedDoseFile);
 
-        int choice = scanner.nextInt();
-        scanner.nextLine();
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(missedDoseFile))) {
+                String line;
+                System.out.println("\nMissed Dose History (Table):");
+                System.out.println("----------------------------------------------------");
+                System.out.printf("%-15s %-20s %-15s\n", "Username", "Medicine Name", "Missed Date");
+                System.out.println("----------------------------------------------------");
 
-        switch (choice) {
-            case 1:
-                // Here you would add the logic to instantly add quantity to the stock
-                System.out.println("Enter the quantity to add: ");
-                int quantity = scanner.nextInt();
-                scanner.nextLine();
-                updateStock(medicineName, quantity);
-                updateNotificationStatus(getExpiredNotification(medicineName), "STOCK UPDATED");
-                break;
-            case 2:
-                // Logic to remove the expired medicine
-                removeExpiredMedicine(medicineName);
-                updateNotificationStatus(getExpiredNotification(medicineName), "REMOVED");
-                break;
-            case 3:
-                return; // Go back without making any changes
-            default:
-                System.out.println("Invalid choice. Try again.");
-                handleExpiredMedicineNotification(medicineName, scanner); // Recurse to ask again
-        }
-    }
+                // Read each line and display the missed doses in a table-like format
+                while ((line = reader.readLine()) != null) {
+                    String[] missedDoseData = line.split(",");
+                    String username = missedDoseData[0];
+                    String medicineName = missedDoseData[1];
+                    String missedDate = missedDoseData[2];
 
-    // Update the stock quantity of a medicine (Assume a method to update stock is available)
-    private static void updateStock(String medicineName, int quantity) {
-        // Logic to update the stock of the medicine goes here
-        System.out.println("Updated stock of " + medicineName + " by " + quantity + " units.");
-    }
-
-    // Remove the expired medicine from the system (placeholder logic)
-    private static void removeExpiredMedicine(String medicineName) {
-        System.out.println("Removing expired medicine: " + medicineName);
-        // Logic to remove the expired medicine from your system (database or file) goes here
-    }
-
-    // Get the stock-out notification string for a given medicine
-    private static String getStockOutNotification(String medicineName) {
-        return "Stock-out notification for " + medicineName;
-    }
-
-    // Get the expired notification string for a given medicine
-    private static String getExpiredNotification(String medicineName) {
-        return "Expired notification for " + medicineName;
-    }
-
-    // Update notification status in file
-    private static void updateNotificationStatus(String notification, String status) {
-        List<String> allNotifications = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.equals(notification)) {
-                    String[] details = line.split(",");
-                    details[3] = status; // Update the status to "TAKEN", "SKIPPED", "STOCK UPDATED", or "REMOVED"
-                    allNotifications.add(String.join(",", details));
-                } else {
-                    allNotifications.add(line); // Keep unchanged notifications
+                    // Display each missed dose entry in a formatted table
+                    System.out.printf("%-15s %-20s %-15s\n", username, medicineName, missedDate);
                 }
+                System.out.println("----------------------------------------------------");
+            } catch (IOException e) {
+                System.out.println("Error reading missed doses file: " + e.getMessage());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            System.out.println("No missed doses recorded.");
+        }
+    }
+
+    // Show refill notifications
+    public static void showRefillNotifications(Notification notification) {
+        System.out.println("Refill Notification: " + notification.getMessage());
+        // Logic to process refill, like adding more stock or prompting user to refill
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Do you want to refill now? (Yes/No): ");
+        String response = scanner.nextLine();
+
+        if (response.equalsIgnoreCase("Yes")) {
+            // Call method to refill medicine
+            refillMedicine(notification.getUsername(), notification.getMessage());
+        } else {
+            System.out.println("You chose to add later.");
+        }
+    }
+
+    // Show expired medicine notifications
+    public static void showExpiredMedicineNotifications(Notification notification) {
+        System.out.println("Expired Medicine Notification: " + notification.getMessage());
+        // Logic to process expired medicines, like removing from inventory or replacing them
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Do you want to remove expired medicine from your stock? (Yes/No): ");
+        String response = scanner.nextLine();
+
+        if (response.equalsIgnoreCase("Yes")) {
+            removeExpiredMedicine(notification.getUsername(), notification.getMessage());
+        } else {
+            System.out.println("You chose to keep the expired medicine.");
+        }
+    }
+
+    // Handle "Time to take your medicine" notifications
+    public static void handleMedicineTimeNotification(Notification notification) {
+        System.out.println("Medicine Time Notification: " + notification.getMessage());
+        // Logic to allow user to mark as taken or skip it (missed dose)
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Did you take your medicine? (Yes/No): ");
+        String response = scanner.nextLine();
+
+        if (response.equalsIgnoreCase("Yes")) {
+            // Update the medicine stock (reduce the quantity)
+            updateMedicineStock(notification.getUsername(), notification.getMessage(), -1); // Decrease stock
+        } else if (response.equalsIgnoreCase("No")) {
+            // Record missed dose
+            recordMissedDose(notification.getUsername(), notification.getMessage());
+        } else {
+            System.out.println("Invalid response. Please answer with 'Yes' or 'No'.");
+        }
+    }
+
+    // Update the medicine stock when a user marks the medicine as taken
+    private static void updateMedicineStock(String username, String medicineName, int quantityChange) {
+        List<Medicine> medicines = Medicine.getUserMedicines(username);
+        for (Medicine medicine : medicines) {
+            if (medicine.getName().equals(medicineName)) {
+                int newQuantity = medicine.getQuantity() + quantityChange;
+                if (newQuantity >= 0) {
+                    Medicine.updateMedicineStock(username, medicineName, newQuantity);
+                    System.out.println("Medicine stock updated: " + medicineName + " now has " + newQuantity + " left.");
+                } else {
+                    System.out.println("Not enough stock to update.");
+                }
+                return;
+            }
+        }
+        System.out.println("Medicine not found in your inventory.");
+    }
+
+    // Record a missed dose in the missed doses file
+    private static void recordMissedDose(String username, String medicineName) {
+        String missedDoseFile = "data/missed_doses.txt";
+        File file = new File(missedDoseFile);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        // Write all notifications back to the file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
-            for (String entry : allNotifications) {
-                writer.write(entry);
-                writer.newLine();
-            }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(missedDoseFile, true))) {
+            String missedDoseData = String.format("%s,%s,%s", username, medicineName, LocalDate.now());
+            writer.write(missedDoseData);
+            writer.newLine();
+            System.out.println("Missed dose recorded: " + medicineName);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Notification updated successfully.");
+    }
+
+    // Refill a medicine when the user chooses to refill
+    private static void refillMedicine(String username, String message) {
+        String medicineName = message.split(":")[0];  // Assume the message contains the medicine name
+        int refillQuantity = 10; // Default quantity to refill
+
+        // Add the medicine back to the user's stock
+        List<Medicine> medicines = Medicine.getUserMedicines(username);
+        for (Medicine medicine : medicines) {
+            if (medicine.getName().equals(medicineName)) {
+                Medicine.updateMedicineStock(username, medicineName, medicine.getQuantity() + refillQuantity);
+                System.out.println("Refilled " + medicineName + " by " + refillQuantity + " units.");
+                return;
+            }
+        }
+
+        System.out.println("Medicine not found in your inventory.");
+    }
+
+    // Remove expired medicine from the user's inventory
+    private static void removeExpiredMedicine(String username, String message) {
+        String medicineName = message.split(":")[0];  // Assume the message contains the medicine name
+        List<Medicine> medicines = Medicine.getUserMedicines(username);
+
+        for (Medicine medicine : medicines) {
+            if (medicine.getName().equals(medicineName)) {
+                Medicine.removeMedicine(username, medicineName);
+                System.out.println("Expired medicine " + medicineName + " has been removed from your stock.");
+                return;
+            }
+        }
+
+        System.out.println("Medicine not found in your inventory.");
+    }
+
+    // Method to add refill notifications (for use in ReminderManager or other parts of the system)
+    public static void addRefillNotification(String username, String message) {
+        Notification refillNotification = new Notification(username, message, NotificationType.REFILL, false);
+        Notification.addNotification(refillNotification);
+    }
+
+    // Method to add missed dose notifications (for use in ReminderManager or other parts of the system)
+    public static void addMissedDoseNotification(String username, String message) {
+        Notification missedDoseNotification = new Notification(username, message, NotificationType.MISSED_DOSE, false);
+        Notification.addNotification(missedDoseNotification);
+    }
+
+    // Method to add expired medicine notifications (for use in ReminderManager or other parts of the system)
+    public static void addExpiredMedicineNotification(String username, String message) {
+        Notification expiredMedicineNotification = new Notification(username, message, NotificationType.EXPIRED_MEDICINE, false);
+        Notification.addNotification(expiredMedicineNotification);
     }
 }

@@ -1,18 +1,18 @@
 package core;
 
 import java.io.*;
-import java.util.*;
 
 public class User {
     private String username;
     private String password;
     private String firstName;
     private String lastName;
-    private String gender;
+    private Gender gender; // Enum: MALE, FEMALE, OTHER
     private int age;
 
-    // Constructor
-    public User(String username, String password, String firstName, String lastName, String gender, int age) {
+    private static final String FILE_PATH = "data/users.txt";
+
+    public User(String username, String password, String firstName, String lastName, Gender gender, int age) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
@@ -21,108 +21,90 @@ public class User {
         this.age = age;
     }
 
-    // Method to create the file if it doesn't exist
-    private static void createFileIfNotExist(String filePath) {
-        File file = new File(filePath);
-        try {
-            if (!file.exists()) {
-                if (file.createNewFile()) {
-                    System.out.println("Created new file: " + file.getName());
-                } else {
-                    System.out.println("Failed to create the file: " + file.getName());
+    // Registers a new user (writes to file)
+    public static boolean registerUser(String username, String password, String firstName, String lastName, Gender gender, int age) {
+        ensureFileExists();
+
+        if (doesUsernameExist(username)) {
+            System.out.println("Username already exists!");
+            return false;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
+            String userData = String.join(",", username, password, firstName, lastName, gender.toString(), String.valueOf(age));
+            writer.write(userData);
+            writer.newLine();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Validates user login
+    public static boolean validateLogin(String username, String password) {
+        ensureFileExists();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length >= 2 && data[0].equals(username) && data[1].equals(password)) {
+                    return true;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    // Register a user
-    public static boolean registerUser(String username, String password, String firstName, String lastName, String gender, int age) {
-        String filePath = "D:\\SWE\\3rd Semester\\SWE 4302 OOP II Lab (Group A)\\OOP II Project\\Medicine Reminder\\users.txt";
-        createFileIfNotExist(filePath);  // Check if users.txt exists and create if not
-
-        if (doesUsernameExist(username)) {
-            return false; // Username already taken
-        }
-
-        // Create a new user
-        User newUser = new User(username, password, firstName, lastName, gender, age);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            writer.write(username + "," + password + "," + firstName + "," + lastName + "," + gender + "," + age);
-            writer.newLine();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    // Method for checking if username already exists
+    // Checks if a username already exists
     public static boolean doesUsernameExist(String username) {
-        String filePath = "D:\\SWE\\3rd Semester\\SWE 4302 OOP II Lab (Group A)\\OOP II Project\\Medicine Reminder\\users.txt";
-        createFileIfNotExist(filePath);  // Check if users.txt exists and create if not
+        ensureFileExists();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] userDetails = line.split(",");
-                if (userDetails[0].equals(username)) {
+                String[] data = line.split(",");
+                if (data.length > 0 && data[0].equals(username)) {
                     return true;
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    // Method to validate login
-    public static boolean validateLogin(String username, String password) {
-        String filePath = "D:\\SWE\\3rd Semester\\SWE 4302 OOP II Lab (Group A)\\OOP II Project\\Medicine Reminder\\users.txt";
-        createFileIfNotExist(filePath);  // Check if users.txt exists and create if not
+    // Retrieves a user by username
+    public static User getUserByUsername(String username) {
+        ensureFileExists();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] userDetails = line.split(",");
-                if(userDetails[0].equals(username) && userDetails[1].equals(password)) {
-                    return true; // Login successful
+                String[] data = line.split(",");
+                if (data.length == 6 && data[0].equals(username)) {
+                    return new User(data[0], data[1], data[2], data[3], Gender.valueOf(data[4]), Integer.parseInt(data[5]));
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
-    // getters
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public int getAge() {
-        return age;
+    // Ensures the user file exists
+    private static void ensureFileExists() {
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            try {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
