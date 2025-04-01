@@ -1,65 +1,176 @@
 package core;
 
 import java.io.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.time.LocalDate;
+import java.time.*;
+import java.util.stream.Collectors;
+
+import UI.*;
+
+import static controller.Main.clearScreen;
+import static core.Notification.markNotificationAsProcessed;
 
 
 public class NotificationManager {
 
     // Process and display all notifications for the user
+    // In NotificationManager.java - Update processNotifications
     public static void processNotifications(String username) {
+        clearScreen();
         List<Notification> notifications = Notification.getUserNotifications(username);
 
-        if (notifications.isEmpty()) {
-            System.out.println("No new notifications.");
+        System.out.println("=== Notifications ===");
+        System.out.println("1. Missed Doses");
+        System.out.println("2. Refill Alerts");
+        System.out.println("3. Expired Medicines");
+        System.out.println("4. Medicine Time Alerts");
+        System.out.println("5. Back");
+        System.out.print("Choose option: ");
+
+        Scanner scanner = new Scanner(System.in);
+        int choice = scanner.nextInt();
+        scanner.nextLine();  // Consume newline
+
+        if (choice == 5) return;
+
+        NotificationType[] types = {
+                NotificationType.MISSED_DOSE,
+                NotificationType.REFILL,
+                NotificationType.EXPIRED_MEDICINE,
+                NotificationType.MEDICINE_TIME
+        };
+
+        if (choice < 1 || choice > 4) {
+            System.out.println("Invalid choice!");
             return;
         }
 
-        System.out.println("Notifications for " + username + ":");
-        for (int i = 0; i < notifications.size(); i++) {
-            Notification notification = notifications.get(i);
-            System.out.println((i + 1) + ". " + notification.getType() + " - " + notification.getMessage() +
-                    (notification.isProcessed() ? " [Processed]" : " [Unprocessed]"));
+        NotificationType selectedType = types[choice-1];
+        displayNotificationTable(username, selectedType);
+    }
+
+    private static void displayNotificationTable(String username, NotificationType type) {
+        List<Notification> notifications = Notification.getUserNotifications(username)
+                .stream()
+                .filter(n -> n.getType() == type && !n.isProcessed())
+                .collect(Collectors.toList());
+
+        if (notifications.isEmpty()) {
+            System.out.println("No notifications of this type");
+            return;
         }
 
-        // Ask the user to process a notification
-        System.out.println("\nEnter the number of the notification to process (or 0 to exit): ");
+        List<String> headers = List.of("#", "Type", "Message", "Status");
+        List<List<String>> rows = new ArrayList<>();
+
+        for (int i = 0; i < notifications.size(); i++) {
+            Notification n = notifications.get(i);
+            rows.add(List.of(
+                    String.valueOf(i+1),
+                    n.getType().toString(),
+                    n.getMessage(),
+                    n.isProcessed() ? "Processed" : "Pending"
+            ));
+        }
+
+        UI.displayReminderTable(headers, rows);
+        processSelectedNotification(notifications);
+    }
+
+    private static void processSelectedNotification(List<Notification> notifications) {
         Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter notification number to process (0 to cancel): ");
         int choice = scanner.nextInt();
+        scanner.nextLine();
 
         if (choice > 0 && choice <= notifications.size()) {
-            Notification selectedNotification = notifications.get(choice - 1);
-            if (!selectedNotification.isProcessed()) {
-                processNotification(selectedNotification);
-            } else {
-                System.out.println("This notification has already been processed.");
-            }
-        } else {
-            System.out.println("Exiting.");
+            Notification selected = notifications.get(choice-1);
+            processNotification(selected);
         }
     }
 
     // Process a specific notification
+    // In NotificationManager.java - Enhance processNotification
     public static void processNotification(Notification notification) {
+        clearScreen();
         switch (notification.getType()) {
             case MISSED_DOSE:
-                showMissedDoses(notification);
+                handleMissedDose(notification);
                 break;
             case REFILL:
-                showRefillNotifications(notification);
+                handleRefill(notification);
                 break;
             case EXPIRED_MEDICINE:
-                showExpiredMedicineNotifications(notification);
+                handleExpiredMedicine(notification);
                 break;
             case MEDICINE_TIME:
                 handleMedicineTimeNotification(notification);
                 break;
-            default:
-                System.out.println("Notification type not handled.");
         }
-        // Mark the notification as processed after handling it
-        Notification.markNotificationAsProcessed(notification.getUsername(), notification.getMessage());
+        markNotificationAsProcessed(notification.getUsername(), notification.getMessage());
+    }
+
+    private static void handleMissedDose(Notification notification) {
+        System.out.println("Missed Dose: " + notification.getMessage());
+        System.out.println("1. View Missed Dose History");
+        System.out.println("2. Mark as Completed");
+        System.out.print("Choose option: ");
+
+        Scanner scanner = new Scanner(System.in);
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choice == 1) {
+            showMissedDoses(notification);
+        }
+        // Marking as completed just processes the notification
+    }
+
+    private static void handleRefill(Notification notification) {
+        System.out.println("Refill Notification: " + notification.getMessage());
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("1. Refill Now");
+        System.out.println("2. Remind Later");
+        System.out.print("Choose option: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choice == 1) {
+            System.out.print("Enter quantity to add: ");
+            int quantity = scanner.nextInt();
+            scanner.nextLine();
+
+            String medicineName = notification.getMessage().replace("Refill needed for: ", "");
+            Medicine.updateMedicineStock(
+                    notification.getUsername(),
+                    medicineName,
+                    // Get current quantity and add new
+                    Medicine.getUserMedicines(notification.getUsername()).stream()
+                            .filter(m -> m.getName().equals(medicineName))
+                            .findFirst()
+                            .map(Medicine::getQuantity)
+                            .orElse(0) + quantity
+            );
+            System.out.println(quantity + " units added to " + medicineName);
+        }
+    }
+
+    private static void handleExpiredMedicine(Notification notification) {
+        System.out.println("Expired Medicine: " + notification.getMessage());
+        System.out.println("1. Remove from Inventory");
+        System.out.println("2. Keep Anyway");
+        System.out.print("Choose option: ");
+
+        Scanner scanner = new Scanner(System.in);
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choice == 1) {
+            removeExpiredMedicine(notification.getUsername(), notification.getMessage());
+        }
     }
 
     // Show missed doses notifications
@@ -128,21 +239,50 @@ public class NotificationManager {
     }
 
     // Handle "Time to take your medicine" notifications
+    // Modify the medicine time notification handler
+    // In NotificationManager.java - Update handleMedicineTimeNotification
     public static void handleMedicineTimeNotification(Notification notification) {
         System.out.println("Medicine Time Notification: " + notification.getMessage());
-        // Logic to allow user to mark as taken or skip it (missed dose)
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Did you take your medicine? (Yes/No): ");
-        String response = scanner.nextLine();
 
-        if (response.equalsIgnoreCase("Yes")) {
-            // Update the medicine stock (reduce the quantity)
-            updateMedicineStock(notification.getUsername(), notification.getMessage(), -1); // Decrease stock
-        } else if (response.equalsIgnoreCase("No")) {
-            // Record missed dose
-            recordMissedDose(notification.getUsername(), notification.getMessage());
-        } else {
-            System.out.println("Invalid response. Please answer with 'Yes' or 'No'.");
+        // New parsing logic with error handling
+        String[] parts = notification.getMessage().split(" due at ");
+        if (parts.length != 2) {
+            System.out.println("Invalid notification format");
+            return;
+        }
+
+        String medicineName = parts[0];
+        String dateTime = parts[1];
+
+        try {
+            LocalDateTime dueTime = LocalDateTime.parse(
+                    dateTime,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+            );
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.printf("Did you take '%s' at %s? (Yes/No): ", medicineName,
+                    dueTime.format(DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd")));
+            String response = scanner.nextLine();
+
+            if (response.equalsIgnoreCase("Yes")) {
+                Reminder.markReminderAsTaken(
+                        notification.getUsername(),
+                        medicineName,
+                        dueTime.toLocalDate(),
+                        dueTime.toLocalTime()
+                );
+                DoseHistoryManager.addDoseHistory(new DoseHistory(
+                        notification.getUsername(),
+                        medicineName,
+                        LocalDateTime.now()
+                ));
+                updateMedicineStock(notification.getUsername(), medicineName, -1);
+            } else {
+                recordMissedDose(notification.getUsername(), medicineName);
+            }
+        } catch (DateTimeParseException e) {
+            System.out.println("Error parsing notification datetime");
         }
     }
 
@@ -220,10 +360,32 @@ public class NotificationManager {
         System.out.println("Medicine not found in your inventory.");
     }
 
+    // Add this helper method
+    public static void addMedicineTimeNotification(String username, String message) {
+        Notification notification = new Notification(
+                username,
+                message,
+                NotificationType.MEDICINE_TIME,
+                false
+        );
+        Notification.addNotification(notification);
+    }
+
     // Method to add refill notifications (for use in ReminderManager or other parts of the system)
     public static void addRefillNotification(String username, String message) {
-        Notification refillNotification = new Notification(username, message, NotificationType.REFILL, false);
-        Notification.addNotification(refillNotification);
+        // Check if notification already exists
+        boolean exists = Notification.getUserNotifications(username).stream()
+                .anyMatch(n -> n.getMessage().equals(message) && !n.isProcessed());
+
+        if (!exists) {
+            Notification notification = new Notification(
+                    username,
+                    message,
+                    NotificationType.REFILL,
+                    false
+            );
+            Notification.addNotification(notification);
+        }
     }
 
     // Method to add missed dose notifications (for use in ReminderManager or other parts of the system)

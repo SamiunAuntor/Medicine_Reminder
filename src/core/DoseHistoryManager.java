@@ -1,7 +1,10 @@
 package core;
 
 import java.io.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import UI.*;
+import java.util.stream.Collectors;
 
 public class DoseHistoryManager {
     private static final String FILE_PATH = "data/dose_history.txt";
@@ -68,16 +71,21 @@ public class DoseHistoryManager {
 
     // Display all dose history for a specific user
     public static void displayDoseHistoryByUser(String username) {
-        List<DoseHistory> historyList = getDoseHistoryByUser(username);
-        if (historyList.isEmpty()) {
-            System.out.println("No dose history found for user: " + username);
+        List<DoseHistory> history = getDoseHistoryByUser(username);
+        if (history.isEmpty()) {
+            System.out.println("No dose history found");
             return;
         }
 
-        System.out.println("Dose History for user: " + username);
-        for (DoseHistory history : historyList) {
-            System.out.println("Medicine: " + history.getMedicineName() + " | Dose Time: " + history.getDoseTime());
-        }
+        List<String> headers = List.of("Medicine", "Dose Time");
+        List<List<String>> rows = history.stream()
+                .map(h -> List.of(
+                        h.getMedicineName(),
+                        h.getDoseTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+                ))  // Fixed parenthesis
+                .collect(Collectors.toList());  // Proper collection method
+
+        UI.displayReminderTable(headers, rows);
     }
 
     // Display dose history for a specific medicine of a user

@@ -123,6 +123,43 @@ public class Reminder {
         return times;
     }
 
+    // Add this method to update reminder status
+    public static boolean markReminderAsTaken(String username, String medicineName, LocalDate date, LocalTime time) {
+        List<String> lines = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data[0].equals(username)
+                        && data[1].equals(medicineName)
+                        && data[3].equals(date.toString())
+                        && data[2].equals(time.toString())) {
+                    lines.add(String.join(",", data[0], data[1], data[2], data[3], "true")); // Mark as taken
+                    found = true;
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        if (found) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+                for (String line : lines) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return found;
+    }
+
     // Ensures the reminder file exists
     private static void ensureFileExists() {
         File file = new File(FILE_PATH);

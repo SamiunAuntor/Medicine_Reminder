@@ -107,6 +107,11 @@ public class Medicine {
                             LocalDate.parse(data[7])));
                 }
             }
+            // After updating stock, check for refill needs
+            if (newQuantity <= 0) {
+                String message = "Refill needed for: " + medicineName;
+                NotificationManager.addRefillNotification(username, message);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

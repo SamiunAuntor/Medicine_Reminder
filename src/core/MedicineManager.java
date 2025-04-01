@@ -1,7 +1,10 @@
 package core;
 
 import core.Medicine;
-
+import UI.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Scanner;
@@ -52,20 +55,29 @@ public class MedicineManager {
     }
 
     // View all medicines for a user
-    public static void viewMedicineList() {
-        System.out.print("\nEnter username to view their medicines: ");
-        String username = scanner.nextLine();
-
+    public static void viewMedicineList(String username) {
         var medicines = Medicine.getUserMedicines(username);
+
         if (medicines.isEmpty()) {
-            System.out.println("No medicines found for this user.");
-        } else {
-            System.out.println("\n--- Medicine List ---");
-            for (Medicine medicine : medicines) {
-                System.out.println(medicine.getName() + " (" + medicine.getDosage() + ")");
-            }
+            System.out.println("No medicines found");
+            return;
         }
+
+        List<String> headers = List.of("Name", "Dosage", "Quantity", "Expiry");
+        List<List<String>> rows = new ArrayList<>();
+
+        for (Medicine med : medicines) {
+            rows.add(List.of(
+                    med.getName(),
+                    med.getDosage(),
+                    String.valueOf(med.getQuantity()),
+                    med.getExpiryDate().toString()
+            ));
+        }
+
+        UI.displayReminderTable(headers, rows);
     }
+
 
     // Refill a medicine (updates stock quantity)
     public static void refillMedicine() {
