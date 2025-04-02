@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import UI.*;
 
-import static controller.Main.clearScreen;
 import static core.Notification.markNotificationAsProcessed;
 
 
@@ -18,7 +17,7 @@ public class NotificationManager {
     // Process and display all notifications for the user
     // In NotificationManager.java - Update processNotifications
     public static void processNotifications(String username) {
-        clearScreen();
+        UI.clearScreen();
         List<Notification> notifications = Notification.getUserNotifications(username);
 
         System.out.println("=== Notifications ===");
@@ -94,7 +93,7 @@ public class NotificationManager {
     // Process a specific notification
     // In NotificationManager.java - Enhance processNotification
     public static void processNotification(Notification notification) {
-        clearScreen();
+        UI.clearScreen();
         switch (notification.getType()) {
             case MISSED_DOSE:
                 handleMissedDose(notification);

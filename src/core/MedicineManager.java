@@ -9,15 +9,18 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Scanner;
 
+import static controller.Main.currentUser;
+
 public class MedicineManager {
     private static Scanner scanner = new Scanner(System.in);
 
     // Adds a new medicine
     public static void addMedicine() {
-        System.out.println("\n--- Add New Medicine ---");
+        UI.clearScreen();
+        UI.printBoxedTitle("ADD A NEW MEDICINE");
 
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+
+        String username = currentUser;
 
         System.out.print("Enter medicine name: ");
         String name = scanner.nextLine();
@@ -56,6 +59,10 @@ public class MedicineManager {
 
     // View all medicines for a user
     public static void viewMedicineList(String username) {
+        UI.clearScreen();
+        String title = "Medicine List of " + username;
+        UI.printBoxedTitle(title);
+
         var medicines = Medicine.getUserMedicines(username);
 
         if (medicines.isEmpty()) {
