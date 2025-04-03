@@ -1,8 +1,135 @@
-NEWUSER,M1 due at 2025-04-03 12:24,MEDICINE_TIME,true
-NEWUSER,M1 due at 2025-04-03 12:24,MEDICINE_TIME,true
-NEWUSER,M1 due at 2025-04-03 12:24,MEDICINE_TIME,true
-NEWUSER,M1 due at 2025-04-03 12:28,MEDICINE_TIME,false
-NEWUSER,M1 due at 2025-04-03 12:28,MEDICINE_TIME,false
-NEWUSER,M1 due at 2025-04-03 12:28,MEDICINE_TIME,false
-NEWUSER,M1 due at 2025-04-03 12:28,MEDICINE_TIME,false
-NEWUSER,M1 due at 2025-04-03 12:28,MEDICINE_TIME,false
+newuser,x due at 2025-04-01 08:00,MEDICINE_TIME,false
+newuser,x due at 2025-04-02 08:00,MEDICINE_TIME,false
+newuser,x due at 2025-04-03 08:00,MEDICINE_TIME,false
+newuser,x due at 2025-04-01 14:00,MEDICINE_TIME,false
+newuser,x due at 2025-04-02 14:00,MEDICINE_TIME,false
+newuser,x due at 2025-04-03 14:00,MEDICINE_TIME,false
+newuser,x due at 2025-04-01 20:00,MEDICINE_TIME,false
+newuser,x due at 2025-04-02 20:00,MEDICINE_TIME,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,true
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,true
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,true
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,t due at 2025-04-03 08:00,MEDICINE_TIME,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 08:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 14:00 on 2025-04-02,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-01,MISSED_DOSE,false
+newuser,x missed at 20:00 on 2025-04-02,MISSED_DOSE,false

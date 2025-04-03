@@ -1,6 +1,7 @@
 package core;
 
 import java.io.*;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -79,39 +80,92 @@ public class Reminder {
     }
 
 
-    // Generate a schedule based on the medicine's intake times and dates
-    // In Reminder.java - Replace only this method
     public static void generateMedicineSchedule(String username, String medicineName) {
         ensureFileExists();
         try (BufferedReader reader = new BufferedReader(new FileReader(MEDICINE_FILE_PATH))) {
             String line;
+            boolean medicineFound = false;
+
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
                 if (data[0].equals(username) && data[1].equals(medicineName)) {
-                    // Corrected: Get times from column index 4 (was previously reading from wrong column)
+                    medicineFound = true;
+
+                    // Parse medicine data
                     String[] timesArray = data[4].split(";");
                     LocalTime[] times = new LocalTime[timesArray.length];
                     for (int i = 0; i < timesArray.length; i++) {
                         times[i] = LocalTime.parse(timesArray[i]);
                     }
 
-                    LocalDate startDate = LocalDate.parse(data[5]);  // Column 5: startDate
-                    LocalDate endDate = LocalDate.parse(data[6]);    // Column 6: endDate
+                    LocalDate startDate = LocalDate.parse(data[5]);
+                    LocalDate endDate = LocalDate.parse(data[6]);
 
-                    // Generate reminders for each time slot
+                    // Get existing reminders
+                    List<Reminder> existingReminders = getRemindersByMedicine(username, medicineName);
+                    Set<LocalDateTime> existingDateTimeSet = new HashSet<>();
+                    for (Reminder r : existingReminders) {
+                        existingDateTimeSet.add(LocalDateTime.of(r.getDate(), r.getTime()));
+                    }
+
+                    int newRemindersAdded = 0;
+                    int duplicatesSkipped = 0;
+
+                    // Generate reminders
                     for (LocalTime time : times) {
                         LocalDate currentDate = startDate;
                         while (!currentDate.isAfter(endDate)) {
-                            Reminder reminder = new Reminder(username, medicineName, time, currentDate, false);
-                            addReminder(reminder);
+                            LocalDateTime potentialDateTime = LocalDateTime.of(currentDate, time);
+
+                            if (!existingDateTimeSet.contains(potentialDateTime)) {
+                                Reminder reminder = new Reminder(
+                                        username,
+                                        medicineName,
+                                        time,
+                                        currentDate,
+                                        false
+                                );
+                                if (addReminder(reminder)) {
+                                    newRemindersAdded++;
+                                }
+                            } else {
+                                duplicatesSkipped++;
+                            }
                             currentDate = currentDate.plusDays(1);
                         }
                     }
+
+                    // Print user feedback
+                    System.out.println("\nSchedule Generation Summary:");
+                    System.out.println("----------------------------");
+                    System.out.printf("Medicine: %s\n", medicineName);
+                    System.out.printf("Date Range: %s to %s\n", startDate, endDate);
+
+                    if (newRemindersAdded > 0) {
+                        System.out.printf("✓ Added %d new reminders\n", newRemindersAdded);
+                    }
+                    if (duplicatesSkipped > 0) {
+                        System.out.printf("ⓘ Skipped %d duplicate reminders\n", duplicatesSkipped);
+                    }
+
+                    if (newRemindersAdded == 0 && duplicatesSkipped > 0) {
+                        System.out.println("\nℹ Complete schedule already exists - no new reminders needed");
+                    } else if (newRemindersAdded == 0) {
+                        System.out.println("\n⚠ No reminders generated - check medicine configuration");
+                    }
+
                     break;
                 }
             }
+
+            if (!medicineFound) {
+                System.out.printf("\n⚠ Error: Medicine '%s' not found for user '%s'\n",
+                        medicineName, username);
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.printf("\n⚠ Error generating schedule: %s\n", e.getMessage());
+        } catch (DateTimeException e) {
+            System.err.printf("\n⚠ Invalid date/time format: %s\n", e.getMessage());
         }
     }
 

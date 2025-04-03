@@ -1,1 +1,2 @@
 NEWUSER,NEWUSER,NEW,USER,MALE,21
+newuser,newuser,new,user,MALE,21
