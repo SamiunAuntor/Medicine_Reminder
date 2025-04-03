@@ -35,6 +35,8 @@ public class Main {
 
     private static void showRegistrationScreen() {
         UI.clearScreen();
+        UI.printBoxedTitle("USER REGISTRATION");
+
         UserManager.registerUser();
         UI.waitForEnter();
     }
@@ -68,20 +70,19 @@ public class Main {
             ReminderManager.checkDueReminders(currentUser);
             ReminderManager.checkMissedDoses(currentUser);
 
-            String[] dashboardOptions = {"Add Medicine", "View Medicines", "Manage Reminders", "Dose History", "Notifications", "Logout"};
+            String[] dashboardOptions = {"Manage Medicine", "Manage Reminders", "Dose History", "Notifications", "Logout"};
             String title = currentUser + "'s " + "DASHBOARD";
             UI.printBoxedMenu(dashboardOptions, title);
 
 
-            int choice = getIntInput(1, 6);
+            int choice = getIntInput(1, 5);
 
             switch (choice) {
-                case 1 -> MedicineManager.addMedicine();
-                case 2 -> MedicineManager.viewMedicineList(currentUser);
-                case 3 -> manageReminders();
-                case 4 -> DoseHistoryManager.displayDoseHistoryByUser(currentUser);
-                case 5 -> NotificationManager.processNotifications(currentUser);
-                case 6 -> { currentUser = null; return; }
+                case 1 -> manageMedicine();
+                case 2 -> manageReminders();
+                case 3 -> DoseHistoryManager.displayDoseHistoryByUser(currentUser);
+                case 4 -> NotificationManager.processNotifications(currentUser);
+                case 5 -> { currentUser = null; return; }
             }
             UI.waitForEnter();
         }
@@ -91,7 +92,6 @@ public class Main {
     private static void manageReminders() {
         UI.clearScreen();
 
-        MedicineManager.viewMedicineList(currentUser);
 
         System.out.println("\n");
 
@@ -102,13 +102,33 @@ public class Main {
 
         if (choice == 4) return;
 
+        MedicineManager.viewMedicineList(currentUser);
+
         System.out.print("\nEnter medicine name: ");
         String medName = scanner.nextLine();
+        System.out.println("\n");
 
         switch (choice) {
             case 1 -> ReminderManager.addReminder(currentUser, medName);
             case 2 -> ReminderManager.viewReminders(currentUser, medName);
-            case 3 -> ReminderManager.viewNextDoseTime(currentUser, medName);
+            case 3 -> ReminderManager.viewNextDoseDateTime(currentUser, medName);
+        }
+    }
+
+    public static void manageMedicine()  {
+        UI.clearScreen();
+
+        String[] medicineManagementOptions ={"Add a Medcicine", "View Medicines", "Remove Medicine", "Back"};
+        UI.printBoxedMenu(medicineManagementOptions, "MEDICINE MANAGEMENT");
+
+        int choice = getIntInput(1, 4);
+
+        if (choice == 4) return;
+
+        switch (choice) {
+            case 1 -> MedicineManager.addMedicine();
+            case 2 -> MedicineManager.viewMedicineList(currentUser);
+            case 3 -> MedicineManager.removeMedicine();
         }
     }
 

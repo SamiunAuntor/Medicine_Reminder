@@ -10,8 +10,6 @@ public class UserManager {
 
     // Handles user registration
     public static void registerUser() {
-        System.out.println("\n--- User Registration ---");
-
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
 

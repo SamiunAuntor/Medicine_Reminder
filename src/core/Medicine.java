@@ -135,28 +135,31 @@ public class Medicine {
         }
     }
 
-    // Removes a specific medicine from the file
-    public static void removeMedicine(String username, String medicineName) {
+    // Removes a specific medicine from the file and returns true if removed, false otherwise
+    public static boolean removeMedicine(String username, String medicineName) {
         ensureFileExists();
         List<Medicine> medicines = new ArrayList<>();
+        boolean removed = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (!(data[0].equals(username) && data[1].equals(medicineName))) {
-                    String[] timesArray = data[4].split(";");
-                    LocalTime[] times = new LocalTime[timesArray.length];
-                    for (int i = 0; i < timesArray.length; i++) {
-                        times[i] = LocalTime.parse(timesArray[i]);
-                    }
-                    medicines.add(new Medicine(data[0], data[1], data[2], Integer.parseInt(data[3]), times,
-                            LocalDate.parse(data[5]), LocalDate.parse(data[6]),
-                            LocalDate.parse(data[7])));
+                if (data[0].equals(username) && data[1].equals(medicineName)) {
+                    removed = true; // Mark as found and removed
+                    continue; // Skip adding this medicine to the new list
                 }
+                String[] timesArray = data[4].split(";");
+                LocalTime[] times = new LocalTime[timesArray.length];
+                for (int i = 0; i < timesArray.length; i++) {
+                    times[i] = LocalTime.parse(timesArray[i]);
+                }
+                medicines.add(new Medicine(data[0], data[1], data[2], Integer.parseInt(data[3]), times,
+                        LocalDate.parse(data[5]), LocalDate.parse(data[6]), LocalDate.parse(data[7])));
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return false; // Return false if an error occurs while reading
         }
 
         // Overwrite the file with updated data
@@ -175,8 +178,12 @@ public class Medicine {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return false; // Return false if an error occurs while writing
         }
+
+        return removed; // Return true if at least one medicine was removed
     }
+
 
     // Ensures the medicine file exists
     private static void ensureFileExists() {

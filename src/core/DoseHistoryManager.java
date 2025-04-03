@@ -71,6 +71,9 @@ public class DoseHistoryManager {
 
     // Display all dose history for a specific user
     public static void displayDoseHistoryByUser(String username) {
+        UI.clearScreen();
+        UI.printBoxedTitle("DOSE HISTORY OF " + username);
+
         List<DoseHistory> history = getDoseHistoryByUser(username);
         if (history.isEmpty()) {
             System.out.println("No dose history found");

@@ -2,6 +2,7 @@ package core;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -61,8 +62,8 @@ public class Reminder {
         return reminders;
     }
 
-    // Retrieves the next dose time for a specific medicine
-    public static LocalTime getNextDoseTime(String username, String medicineName) {
+    // Retrieves the next dose date and time for a specific medicine
+    public static LocalDateTime getNextDoseDateTime(String username, String medicineName) {
         ensureFileExists();
         List<Reminder> reminders = getRemindersByMedicine(username, medicineName);
 
@@ -71,11 +72,12 @@ public class Reminder {
 
         for (Reminder reminder : reminders) {
             if (!reminder.isTaken) {
-                return reminder.getTime();
+                return LocalDateTime.of(reminder.getDate(), reminder.getTime());
             }
         }
         return null; // No upcoming dose
     }
+
 
     // Generate a schedule based on the medicine's intake times and dates
     // In Reminder.java - Replace only this method

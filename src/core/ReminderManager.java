@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import UI.*;
 
+import static controller.Main.currentUser;
+
 public class ReminderManager {
 
     // Method to add a reminder for a selected medicine
@@ -16,6 +18,8 @@ public class ReminderManager {
 
     // Method to view all reminders for a specific medicine
     public static void viewReminders(String username, String medicineName) {
+        UI.printBoxedTitle("ALL REMINDERS FOR " + medicineName);
+
         List<Reminder> reminders = Reminder.getRemindersByMedicine(username, medicineName);
 
         reminders.sort((r1, r2) -> {
@@ -42,13 +46,24 @@ public class ReminderManager {
         UI.displayReminderTable(headers, rows);
     }
 
-    // Method to get the next dose time for a specific medicine
-    public static void viewNextDoseTime(String username, String medicineName) {
-        LocalTime nextDoseTime = Reminder.getNextDoseTime(username, medicineName);
-        System.out.println(nextDoseTime != null ?
-                "Next dose for " + medicineName + " at " + nextDoseTime :
-                "No upcoming doses for " + medicineName);
+    // Method to get the next dose date and time for a specific medicine
+    public static void viewNextDoseDateTime(String username, String medicineName) {
+        UI.printBoxedTitle("NEXT DOSE TIME OF " + medicineName + " FOR " + username);
+
+        LocalDateTime nextDoseDateTime = Reminder.getNextDoseDateTime(username, medicineName);
+        String message;
+
+        if (nextDoseDateTime != null) {
+            message = "Next dose of " + medicineName + " is on " + nextDoseDateTime.toLocalDate() +
+                    " at " + nextDoseDateTime.toLocalTime();
+        } else {
+            message = "No upcoming doses for " + medicineName;
+        }
+
+        UI.printBoxedTitle(message);
     }
+
+
 
     // Check for missed doses (past dates)
     public static void checkMissedDoses(String username) {

@@ -57,6 +57,24 @@ public class MedicineManager {
         }
     }
 
+    public static void removeMedicine() {
+        UI.clearScreen();
+        UI.printBoxedTitle("REMOVE MEDICINE");
+
+        String username = currentUser;
+
+        System.out.print("Enter medicine name: ");
+        String name = scanner.nextLine();
+
+        boolean success = Medicine.removeMedicine(username, name);
+        if (success) {
+            System.out.println("Medicine removed successfully!");
+        }
+        else {
+            System.out.println("Failed to remove medicine.");
+        }
+    }
+
     // View all medicines for a user
     public static void viewMedicineList(String username) {
         UI.clearScreen();
