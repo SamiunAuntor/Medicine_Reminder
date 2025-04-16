@@ -1,2 +1,1 @@
-NEWUSER,NEWUSER,NEW,USER,MALE,21
-newuser,newuser,new,user,MALE,21
+Auntor141,Auntor141,Samiun Alim,Auntor,MALE,21
