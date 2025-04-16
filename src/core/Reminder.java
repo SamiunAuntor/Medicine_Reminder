@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import UI.*;
 
 public class Reminder {
     private String username;
@@ -136,22 +137,31 @@ public class Reminder {
                     }
 
                     // Print user feedback
-                    System.out.println("\nSchedule Generation Summary:");
+                    UI.printBoxedTitle("Schedule Generation Summary");
+                    UI.printBoxedTitle("Medicine Name: " + medicineName);
+                    String dateRange = startDate.toString() + " - " + endDate.toString();
+                    UI.printBoxedTitle("Date Range : " + dateRange);
+
+                    /*System.out.println("\nSchedule Generation Summary:");
                     System.out.println("----------------------------");
                     System.out.printf("Medicine: %s\n", medicineName);
-                    System.out.printf("Date Range: %s to %s\n", startDate, endDate);
+                    System.out.printf("Date Range: %s to %s\n", startDate, endDate);*/
 
                     if (newRemindersAdded > 0) {
-                        System.out.printf("✓ Added %d new reminders\n", newRemindersAdded);
+                        UI.printBoxedTitle("Added " + newRemindersAdded + " Reminders");
+                        //System.out.printf("✓ Added %d new reminders\n", newRemindersAdded);
                     }
                     if (duplicatesSkipped > 0) {
-                        System.out.printf("ⓘ Skipped %d duplicate reminders\n", duplicatesSkipped);
+                        UI.printBoxedTitle("Skipped " + duplicatesSkipped + " Reminders");
+                        //System.out.printf("ⓘ Skipped %d duplicate reminders\n", duplicatesSkipped);
                     }
 
                     if (newRemindersAdded == 0 && duplicatesSkipped > 0) {
-                        System.out.println("\nℹ Complete schedule already exists - no new reminders needed");
+                        UI.printBoxedTitle("Complete schedule already exists!");
+                        //System.out.println("\nℹ Complete schedule already exists - no new reminders needed");
                     } else if (newRemindersAdded == 0) {
-                        System.out.println("\n⚠ No reminders generated - check medicine configuration");
+                        UI.printBoxedTitle("No reminder generated, invalit config!");
+                        //System.out.println("\n⚠ No reminders generated - check medicine configuration");
                     }
 
                     break;
@@ -159,8 +169,9 @@ public class Reminder {
             }
 
             if (!medicineFound) {
-                System.out.printf("\n⚠ Error: Medicine '%s' not found for user '%s'\n",
-                        medicineName, username);
+                UI.printBoxedTitle("Error: Medicine" + medicineName + " not found for " + username);
+                //System.out.printf("\n⚠ Error: Medicine '%s' not found for user '%s'\n",
+                      //  medicineName, username);
             }
         } catch (IOException e) {
             System.err.printf("\n⚠ Error generating schedule: %s\n", e.getMessage());

@@ -93,33 +93,31 @@ public class Main {
     private static void manageReminders() {
         UI.clearScreen();
 
-
         System.out.println("\n");
 
-        String[] reminderManagemenetOptions = {"Add Reminder for a Medicine", "View Reminder for a Medicine", "Next Dose Time for a Medicine", "Back"};
+        String[] reminderManagemenetOptions = {"Add Reminder for a Medicine", "View Reminder for a Medicine", "Back"};
         UI.printBoxedMenu(reminderManagemenetOptions, "REMINDER MANAGEMENT");
 
-        int choice = getIntInput(1, 4);
+        int choice = getIntInput(1, 3);
 
-        if (choice == 4) return;
+        if (choice == 3) return;
 
         MedicineManager.viewMedicineList(currentUser);
 
-        System.out.print("\nEnter medicine name: ");
+        System.out.print("\nEnter name to generate and add reminders: ");
         String medName = scanner.nextLine();
         System.out.println("\n");
 
         switch (choice) {
             case 1 -> ReminderManager.addReminder(currentUser, medName);
             case 2 -> ReminderManager.viewReminders(currentUser, medName);
-            case 3 -> ReminderManager.viewNextDoseDateTime(currentUser, medName);
         }
     }
 
     public static void manageMedicine()  {
         UI.clearScreen();
 
-        String[] medicineManagementOptions ={"Add a Medcicine", "View Medicines", "Remove Medicine", "Back"};
+        String[] medicineManagementOptions ={"Add Medcicine", "View Medicine List", "Remove Medicine", "Back"};
         UI.printBoxedMenu(medicineManagementOptions, "MEDICINE MANAGEMENT");
 
         int choice = getIntInput(1, 4);

@@ -6,54 +6,50 @@ import java.time.format.DateTimeFormatter;
 public class DoseHistory {
     private String username;
     private String medicineName;
-    private LocalDateTime doseTime;
+    private LocalDateTime scheduledTime; // When the medicine was supposed to be taken
+    private LocalDateTime takenTime;     // When the medicine was actually taken
 
-    // Constructor
-    public DoseHistory(String username, String medicineName, LocalDateTime doseTime) {
+    // Constructor with both scheduled and taken times.
+    public DoseHistory(String username, String medicineName, LocalDateTime scheduledTime, LocalDateTime takenTime) {
         this.username = username;
         this.medicineName = medicineName;
-        this.doseTime = doseTime;
+        this.scheduledTime = scheduledTime;
+        this.takenTime = takenTime;
     }
 
-    // Getters and Setters
+    // Getters
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getMedicineName() {
         return medicineName;
     }
 
-    public void setMedicineName(String medicineName) {
-        this.medicineName = medicineName;
+    public LocalDateTime getScheduledTime() {
+        return scheduledTime;
     }
 
-    public LocalDateTime getDoseTime() {
-        return doseTime;
+    public LocalDateTime getTakenTime() {
+        return takenTime;
     }
 
-    public void setDoseTime(LocalDateTime doseTime) {
-        this.doseTime = doseTime;
-    }
-
-    // Method to convert the DoseHistory object to CSV format
+    // Converts a DoseHistory entry to CSV format: username,medicineName,scheduledTime,takenTime
     public String toCSV() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return username + "," + medicineName + "," + doseTime.format(formatter);
+        return username + "," + medicineName + "," + scheduledTime.format(formatter) + "," + takenTime.format(formatter);
     }
 
-    // Static method to convert a CSV line to a DoseHistory object
+    // Parses a CSV line to a DoseHistory object.
     public static DoseHistory fromCSV(String csvLine) {
         String[] values = csvLine.split(",");
-        if (values.length == 3) {
+        if (values.length == 4) {
             String username = values[0];
             String medicineName = values[1];
-            LocalDateTime doseTime = LocalDateTime.parse(values[2], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            return new DoseHistory(username, medicineName, doseTime);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime scheduledTime = LocalDateTime.parse(values[2], formatter);
+            LocalDateTime takenTime = LocalDateTime.parse(values[3], formatter);
+            return new DoseHistory(username, medicineName, scheduledTime, takenTime);
         }
         return null;
     }

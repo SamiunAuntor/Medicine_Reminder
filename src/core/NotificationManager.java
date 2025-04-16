@@ -53,7 +53,9 @@ public class NotificationManager {
                 .collect(Collectors.toList());
 
         if (notifications.isEmpty()) {
-            System.out.println("No Medicine Time notifications found.");
+            System.out.println("╔══════════════════════════════════════════════════════════╗");
+            System.out.println("║                 No notifications found.                  ║");
+            System.out.println("╚══════════════════════════════════════════════════════════╝");
             return;
         }
 
@@ -110,23 +112,23 @@ public class NotificationManager {
             int choice = readIntInput();
 
             if (choice == 1) {
+                // Mark as taken: update reminder, record dose history, update stock.
                 Reminder.markReminderAsTaken(notification.getUsername(), medicineName,
                         dueTime.toLocalDate(), dueTime.toLocalTime());
                 DoseHistoryManager.addDoseHistory(new DoseHistory(
-                        notification.getUsername(), medicineName, LocalDateTime.now()));
+                        notification.getUsername(), medicineName, dueTime, LocalDateTime.now()));
                 updateMedicineStock(notification.getUsername(), medicineName, -1);
-                System.out.println("Dose marked as taken and recorded in dose history.");
+                System.out.println("Dose marked as taken. Dose history updated.");
             } else if (choice == 2) {
                 System.out.println("Dose marked as not taken. It will appear in Missed Doses.");
             }
-
-            // Always mark the notification as processed so that it doesn't show again
+            // Mark notification as processed (so it won't appear again).
             markNotificationAsProcessed(notification.getUsername(), notification.getMessage());
-
         } catch (Exception e) {
             System.out.println("Error parsing date/time: " + e.getMessage());
         }
     }
+
 
     private static void updateMedicineStock(String username, String medicineName, int quantityChange) {
         List<Medicine> medicines = Medicine.getUserMedicines(username);

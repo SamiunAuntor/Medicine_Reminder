@@ -59,6 +59,9 @@ public class MedicineManager {
 
     public static void removeMedicine() {
         UI.clearScreen();
+
+        viewMedicineList(currentUser);
+
         UI.printBoxedTitle("REMOVE MEDICINE");
 
         String username = currentUser;
@@ -68,10 +71,10 @@ public class MedicineManager {
 
         boolean success = Medicine.removeMedicine(username, name);
         if (success) {
-            System.out.println("Medicine removed successfully!");
+            UI.printBoxedTitle("Medicine removed successfully!");
         }
         else {
-            System.out.println("Failed to remove medicine.");
+            UI.printBoxedTitle("Failed to remove medicine.");
         }
     }
 

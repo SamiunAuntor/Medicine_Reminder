@@ -13,11 +13,12 @@ public class ReminderManager {
     // Method to add a reminder for a selected medicine
     public static void addReminder(String username, String medicineName) {
         Reminder.generateMedicineSchedule(username, medicineName);
-        System.out.println("Reminders have been generated for " + medicineName);
+        UI.printBoxedTitle("Reminders have been generated for " + medicineName);
     }
 
     // Method to view all reminders for a specific medicine
     public static void viewReminders(String username, String medicineName) {
+        UI.clearScreen();
         UI.printBoxedTitle("ALL REMINDERS FOR " + medicineName);
 
         List<Reminder> reminders = Reminder.getRemindersByMedicine(username, medicineName);

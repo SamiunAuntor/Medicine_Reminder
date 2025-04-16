@@ -125,7 +125,7 @@ public class UI {
     }
 
     public static void waitForEnter() {
-        System.out.print("\nPress Enter to continue...");
+        System.out.println("Press enter to continue...");
         scanner.nextLine();  // Wait for Enter key
         try {
             Thread.sleep(50);  // Half-second pause after Enter
