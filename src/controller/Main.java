@@ -70,7 +70,7 @@ public class Main {
             ReminderManager.checkDueReminders(currentUser);
             ReminderManager.checkMissedDoses(currentUser);
 
-            String[] dashboardOptions = {"Manage Medicine", "Manage Reminders", "Dose History", "Notifications", "Logout"};
+            String[] dashboardOptions = {"Manage Medicine", "Manage Reminders", "Dose History", "Missed Dose History", "Notifications", "Logout"};
             String title = currentUser + "'s " + "DASHBOARD";
             UI.printBoxedMenu(dashboardOptions, title);
 
@@ -81,8 +81,9 @@ public class Main {
                 case 1 -> manageMedicine();
                 case 2 -> manageReminders();
                 case 3 -> DoseHistoryManager.displayDoseHistoryByUser(currentUser);
-                case 4 -> NotificationManager.processNotifications(currentUser);
-                case 5 -> { currentUser = null; return; }
+                case 4 -> NotificationManager.displayMissedDoses(currentUser);
+                case 5 -> NotificationManager.displayMedicineTimeNotifications(currentUser);
+                case 6 -> { currentUser = null; return; }
             }
             UI.waitForEnter();
         }

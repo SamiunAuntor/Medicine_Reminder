@@ -12,21 +12,6 @@ public class NotificationManager {
 
     private static final Scanner scanner = new Scanner(System.in);
 
-    public static void processNotifications(String username) {
-        UI.clearScreen();
-        String[] notificationsOptions = {"Missed Doses", "Medicine Time Alerts", "Back"};
-        UI.printBoxedMenu(notificationsOptions, "NOTIFICATIONS MENU");
-
-        int choice = readIntInput();
-        if (choice == 3) return;
-
-        if (choice == 1) {
-            displayMissedDoses(username);
-        } else if (choice == 2) {
-            displayMedicineTimeNotifications(username);
-        }
-    }
-
     public static void displayMissedDoses(String username) {
         UI.clearScreen();
         UI.printBoxedTitle("MISSED DOSES for " + username);
@@ -56,7 +41,12 @@ public class NotificationManager {
         }
     }
 
-    private static void displayMedicineTimeNotifications(String username) {
+    public static void displayMedicineTimeNotifications(String username) {
+        UI.clearScreen();
+        System.out.println("╔══════════════════════════════════════════════════════════╗");
+        System.out.println("║                    NOTIFICATION PANEL                    ║");
+        System.out.println("╚══════════════════════════════════════════════════════════╝");
+
         List<Notification> notifications = Notification.getUserNotifications(username)
                 .stream()
                 .filter(n -> n.getType() == NotificationType.MEDICINE_TIME && !n.isProcessed())
