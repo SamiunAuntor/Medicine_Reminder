@@ -14,14 +14,12 @@ public class Main {
         showLandingPage();
     }
 
-
-
     private static void showLandingPage() {
         while (true) {
             UI.clearScreen();
 
             String[] inititalLandingPageOptions = {"Login", "Register", "Exit"};
-            UI.printBoxedMenu(inititalLandingPageOptions, "MEDICIEN REMINDER SYSTEM");
+            UI.printBoxedMenu(inititalLandingPageOptions, "MEDICINE REMINDER SYSTEM");
 
             int choice = getIntInput(1, 3);
 
@@ -89,7 +87,6 @@ public class Main {
         }
     }
 
-
     private static void manageReminders() {
         UI.clearScreen();
 
@@ -114,7 +111,7 @@ public class Main {
         }
     }
 
-    public static void manageMedicine()  {
+    public static void manageMedicine() {
         UI.clearScreen();
 
         String[] medicineManagementOptions ={"Add Medcicine", "View Medicine List", "Remove Medicine", "Back"};
@@ -131,7 +128,6 @@ public class Main {
         }
     }
 
-    // Utility methods
     private static int getIntInput(int min, int max) {
         while (true) {
             try {
@@ -145,6 +141,4 @@ public class Main {
             }
         }
     }
-
-
 }

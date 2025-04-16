@@ -107,7 +107,7 @@ public class NotificationManager {
             String title = String.format("Did you take '%s' at %s?",
                     medicineName,
                     dueTime.format(DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd")));
-            String[] options = { "Mark as taken", "Mark as not taken" };
+            String[] options = { "Mark as taken", "Mark as missed" };
             UI.printBoxedMenu(options, title);
             int choice = readIntInput();
 
@@ -181,8 +181,6 @@ public class NotificationManager {
         return number;
     }
 
-    // ✅ MUST-HAVE METHODS: DO NOT TOUCH
-
     // Duplicate-check version for Medicine Time Notifications
     public static void addMedicineTimeNotification(String username, String message) {
         // Now check among all notifications with the same type and message, regardless of processed status
@@ -199,7 +197,6 @@ public class NotificationManager {
             Notification.addNotification(notification);
         }
     }
-
 
     public static void addMissedDoseNotification(String username, String message) {
         Notification missedDoseNotification = new Notification(username, message, NotificationType.MISSED_DOSE, false);

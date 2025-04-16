@@ -25,7 +25,7 @@ public class MedicineManager {
         System.out.print("Enter medicine name: ");
         String name = scanner.nextLine();
 
-        System.out.print("Enter dosage: ");
+        System.out.print("Enter dosage (e.g. 50 mg): ");
         String dosage = scanner.nextLine();
 
         System.out.print("Enter quantity: ");
@@ -39,13 +39,13 @@ public class MedicineManager {
             times[i] = LocalTime.parse(timesInput[i]);
         }
 
-        System.out.print("Enter start date (yyyy-MM-dd): ");
+        System.out.print("Enter start date (YYYY-MM-DD): ");
         LocalDate startDate = LocalDate.parse(scanner.nextLine());
 
-        System.out.print("Enter end date (yyyy-MM-dd): ");
+        System.out.print("Enter end date (YYYY-MM-DD): ");
         LocalDate endDate = LocalDate.parse(scanner.nextLine());
 
-        System.out.print("Enter expiry date (yyyy-MM-dd): ");
+        System.out.print("Enter expiry date (YYYY-MM-DD): ");
         LocalDate expiryDate = LocalDate.parse(scanner.nextLine());
 
         Medicine medicine = new Medicine(username, name, dosage, quantity, times, startDate, endDate, expiryDate);
@@ -104,36 +104,5 @@ public class MedicineManager {
         }
 
         UI.displayReminderTable(headers, rows);
-    }
-
-
-    // Refill a medicine (updates stock quantity)
-    public static void refillMedicine() {
-        System.out.print("\nEnter username: ");
-        String username = scanner.nextLine();
-
-        System.out.print("Enter medicine name: ");
-        String medicineName = scanner.nextLine();
-
-        System.out.print("Enter new quantity: ");
-        int newQuantity = scanner.nextInt();
-        scanner.nextLine();  // Consume newline
-
-        Medicine.updateMedicineStock(username, medicineName, newQuantity);
-        System.out.println("Medicine stock updated successfully!");
-    }
-
-    // Remove expired medicines
-    public static void removeExpiredMedicine() {
-        System.out.print("\nEnter username to remove expired medicines: ");
-        String username = scanner.nextLine();
-
-        var medicines = Medicine.getUserMedicines(username);
-        for (Medicine medicine : medicines) {
-            if (medicine.getExpiryDate().isBefore(LocalDate.now())) {
-                Medicine.removeMedicine(username, medicine.getName());
-                System.out.println("Removed expired medicine: " + medicine.getName());
-            }
-        }
     }
 }
