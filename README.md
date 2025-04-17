@@ -30,10 +30,11 @@
 
 ---
 
-## 🛠 Prerequisites
+## 🛠 Tools and Technologies
 
-- Java 8 or higher installed.
-- (Optional) Terminal or IDE supporting Java builds.
+- Java
+- VS Code
+- Git & Github
 
 ---
 
